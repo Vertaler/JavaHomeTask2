@@ -15,22 +15,18 @@ public class StringSerializable {
     private String getFieldValue(Field field) throws NotPrimitiveException {
         try {
             Class fieldType = field.getType();
-
             if (!fieldType.isPrimitive()) {
                 throw new NotPrimitiveException(field);
             }
-            field.setAccessible(true);//Для доступа к private полям
-            String fieldTypeName = fieldType.getName();
 
-            // Получение имени метода в зависимости от типа поля. Например, getInt
-            String methodName = "get" + fieldTypeName.substring(0, 1).toUpperCase() + fieldTypeName.substring(1);
-
-            String result = Field.class.getMethod(methodName, Object.class).invoke(field, this).toString();// Получение значения поля
+            field.setAccessible(true);//Для доступа к private полям;
+            String result = field.get(this).toString();// Получение значения поля
             field.setAccessible(false);
             return result;
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException error) {
-            //Эти исключения могут возникнуть в 28 строке
-            //Но из-за проверки поля на примитивность и установки Accesible флага их не должно быть
+
+        } catch ( IllegalAccessException  error) {
+            //Это исключение может возникнуть в 23 строке
+            //Но из-за установки Accesible флага его не должно быть
             return "";
         }
     }
@@ -50,4 +46,6 @@ public class StringSerializable {
         result = resultBuilder.toString();
         return result;
     }
+
+
 }
